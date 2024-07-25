@@ -4,9 +4,9 @@ Graduation project for the University of Aberdeen MSc Cyber Security course. **N
 ## Overview
 This repository contains an Android malware detection application that leverages advanced AI techniques to identify malicious applications. The project involves training AI models using datasets on PyTorch and Azure ML Studio, which are then integrated into a Flutter app powered by TensorFlow Lite for real-time malware detection on Android devices.
 
-## Project Structure
+## Project Structure (branches)
 - **AI Model Training**: The AI models are trained using the Malgenome and MH100k datasets on PyTorch and Azure ML Studio. 
-- **Flutter App**: The trained models are deployed in a Flutter application using TensorFlow Lite for on-device inference and malware detection.
+- **Flutter Apps**: The trained models are deployed in a Flutter application using TensorFlow Lite for on-device inference and malware detection.
 
 ## Datasets
 ### Malgenome
