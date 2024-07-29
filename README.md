@@ -26,3 +26,4 @@ MH100k is another extensive dataset that contains a wealth of Android malware sa
 - **Azure ML Studio**: Facilitates scalable training and model management.
 - **Flutter**: A UI toolkit for building natively compiled applications for mobile from a single codebase.
 - **TensorFlow Lite**: Used for deploying AI models on mobile devices for real-time inference.
+- **Frida**: Used for hooking into APP methods and collecting ML input data.
