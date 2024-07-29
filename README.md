@@ -7,7 +7,7 @@ This repository contains an Android malware detection application that leverages
 ## Project Structure (branches)
 - **AI Model Training**: The AI models are trained using the Malgenome and MH100k datasets on PyTorch and Azure ML Studio. 
 - **Flutter Apps**: The trained models are deployed in a Flutter application using TensorFlow Lite for on-device inference and malware detection.
-
+- **Frida & Python scripts**: The data is collected from the phone by executing a python script, which formats input data, calls FRIDA scripts and formats output data.
 ## Datasets
 ### Malgenome
 The Malgenome project provides a comprehensive Android malware dataset that is crucial for training robust AI models.
