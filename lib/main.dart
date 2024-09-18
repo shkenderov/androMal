@@ -131,6 +131,9 @@ Future<List<List<double?>>> readCsvFile() async {
 
       print("Model and labels loaded successfully");
       //evaluateModel();
+       setState(() {
+        _output = "Model and labels loaded successfully";
+      });
     } catch (e) {
       print("Failed to load model: $e");
       setState(() {
@@ -152,10 +155,10 @@ Future<List<List<double?>>> readCsvFile() async {
       //List<double> inputData = List.generate(215, (index) => Random().nextInt(2).toDouble()); //RAND
       //List<double> inputData = List.generate(215, (index) => 0.0); //ONLY 0s
 
-      // Step 1: Read CSV data
+      //Read CSV data
       List<List<double?>> csvData = await readCsvFile();
 
-      // Step 2: Flatten and convert the CSV data to a List<double>, filtering out nulls
+      // Flatten and convert the CSV data to a List<double>, filtering out nulls
       List<double> inputData = csvData
           .expand((row) => row)
           .where((value) => value != null) // Filter out nulls
