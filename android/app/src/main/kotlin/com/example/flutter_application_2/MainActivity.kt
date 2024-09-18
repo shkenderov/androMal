@@ -29,7 +29,7 @@ class MainActivity : FlutterActivity() {
         }
 
         // Execute the shell command automatically
-        executeShellCommand()
+        //executeShellCommand()
     }
 
     private fun runFridaServer(result: MethodChannel.Result) {
