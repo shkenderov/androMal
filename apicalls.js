@@ -1,18 +1,65 @@
 Java.perform(function() {
     var inputLabels = [];
     var results = [];
+    var pid = Process.id;
 
+    // Import Java classes
+    var BufferedReader = Java.use("java.io.BufferedReader");
+    var FileReader = Java.use("java.io.FileReader");
+
+    function getCpuUsage() {
+        var statPath = "/proc/" + pid + "/stat";
+        try {
+            var reader = BufferedReader.$new(FileReader.$new(statPath));
+            var line = reader.readLine();
+            reader.close();
+            if (line) {
+                var stats = line.split(" ");
+                console.log("CPU Usage Data: utime=" + stats[13] + ", stime=" + stats[14]);
+            }
+        } catch (e) {
+            console.log("Error reading " + statPath + ": " + e.message);
+        }
+    }
+
+    function getRamUsage() {
+        var statusPath = "/proc/" + pid + "/status";
+        try {
+            var reader = BufferedReader.$new(FileReader.$new(statusPath));
+            var line;
+            while ((line = reader.readLine()) !== null) {
+                if (line.indexOf("VmRSS:") !== -1) {
+                    console.log("RAM Usage (VmRSS): " + line.trim());
+                    break;
+                }
+            }
+            reader.close();
+        } catch (e) {
+            console.log("Error reading " + statusPath + ": " + e.message);
+        }
+    }
+
+
+    // Periodically fetch CPU and RAM usage
+    /*setInterval(function() {
+        getCpuUsage();
+        getRamUsage();
+    }, 1000); // Fetch every 1 second
+*/
     // Function to initialize inputLabels from Python
     function initializeInputLabels() {
         //console.log("here");
         recv('inputLabels', function(message) {
             inputLabels = message.payload;
             results = new Array(inputLabels.length).fill(0);
-            console.log("Input labels initialized: 2nd script");
+            console.log("Input labels initialized: API CALLS script");
         }).wait();
     }
     function communicateResults() {
-        console.log("Results after api calls: " + JSON.stringify(results));
+        getCpuUsage();
+        getRamUsage();
+        console.log("Sending API CALL results to python script... \n");
+        
         send({ type: 'results', payload: results });
     }
     // Call initializeInputLabels to populate inputLabels
@@ -27,18 +74,16 @@ Java.perform(function() {
                 method.implementation = function() {
                     //console.log("here")
                     var methodLabel = methodName.split('.').pop(); // Extract the last part.
-                    console.log("----------------------METHOD LABEL------------------------");
-                    console.log(methodLabel);
-                    //await sleepNow(10000)
-
                     var index = inputLabels.indexOf(methodLabel);
-                    console.log(index);
-                    console.log("------END-------------METHOD LABEL-----------END----------");
-
                     if (index !== -1) {
                         results[index] = 1;
+                        console.log("hookMethod detected: Called " + className + "." + methodName);
+
                     }
-                    //console.log("hookMethod detected: Called " + className + "." + methodName + " with args: " + JSON.stringify(arguments));
+                    count++;
+                    console.log("COUNT: "+ count);
+                    getCpuUsage();
+                    getRamUsage();
                     return method.apply(this, arguments);
                 };
             });
@@ -48,34 +93,25 @@ Java.perform(function() {
     }
     const sleepNow = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
     var flag=0;
+    var count=0;
     function hookAllMethods(className) {
-        //console.log("FLAG outside BEFORE:" + flag);
         if(flag==0){
-          
-            console.log("FLAG INSIDE BEFORE:" + flag);
-
             flag=1;
             try {
                 var clazz = Java.use(className);
                 var methods = clazz.class.getDeclaredMethods();
-                console.log("METHODS");
-                console.log(methods.length);
                 if(!methods.length){
-                    console.log("FLAG CHANGE");
-
                     flag=0;
                 }else{
                     setTimeout(communicateResults, 5000); // Adjust the delay as needed
                 }
                 methods.forEach(function(method) {
                     var methodName = method.getName();
-                    //console.log(methodName);
                     hookMethod(className, methodName);
                 });
             } catch (e) {
                 console.log("Error hooking into all methods of " + className + ": " + e);
             }
-            console.log("FLAG INSIDE after:" + flag);
         }
     }
 
